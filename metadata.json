@@ -1,0 +1,6 @@
+{
+  "name": "SSMIET HallSync AI",
+  "description": "Smart Hall Allotment, Event Scheduling and Resource Management System for SSM Institute of Engineering and Technology (SSMIET), Dindigul.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

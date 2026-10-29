@@ -709,7 +709,70 @@ apiRouter.put(
     }
   }
 );
+apiRouter.delete(
+  "/halls/:id",
+  requireAuth,
+  requireAdmin,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const id = Number(req.params.id);
 
+      if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ error: "Invalid hall ID." });
+      }
+
+      const [existingHall] = await db
+        .select()
+        .from(halls)
+        .where(eq(halls.id, id))
+        .limit(1);
+
+      if (!existingHall) {
+        return res.status(404).json({
+          error: "Seminar hall not found.",
+        });
+      }
+
+      const linkedBookings = await db
+        .select({ id: bookings.id })
+        .from(bookings)
+        .where(eq(bookings.hallId, id))
+        .limit(1);
+
+      if (linkedBookings.length > 0) {
+        return res.status(409).json({
+          error:
+            "This hall has booking records and cannot be deleted. Deactivate it instead.",
+        });
+      }
+
+      await db.delete(halls).where(eq(halls.id, id));
+
+      await logAuditAction({
+        userId: req.user!.id,
+        action: "DELETE_HALL",
+        entityType: "hall",
+        entityId: id,
+        details: `Deleted seminar hall "${existingHall.name}" (${existingHall.code}).`,
+        ipAddress: req.ip,
+      });
+
+      return res.json({
+        success: true,
+        message: `Seminar hall "${existingHall.name}" deleted successfully.`,
+      });
+    } catch (error: any) {
+      if (error?.code === "23503") {
+        return res.status(409).json({
+          error:
+            "This hall is linked to existing records and cannot be deleted. Deactivate it instead.",
+        });
+      }
+
+      next(error);
+    }
+  }
+);
 // Associate Resource with Hall
 apiRouter.post(
   "/halls/:id/resources",

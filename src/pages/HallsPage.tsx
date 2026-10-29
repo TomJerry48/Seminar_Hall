@@ -130,6 +130,28 @@ export const HallsPage: React.FC = () => {
       setError(err.message || "Failed to update hall status.");
     }
   };
+  ```tsx
+const handleDeleteHall = async (hall: any) => {
+  const confirmed = window.confirm(
+    `Are you sure you want to permanently delete "${hall.name}"?`
+  );
+
+  if (!confirmed) return;
+
+  setError(null);
+
+  try {
+    await apiRequest(`/halls/${hall.id}`, {
+      method: "DELETE",
+    });
+
+    await loadHalls();
+    alert(`"${hall.name}" deleted successfully.`);
+  } catch (err: any) {
+    setError(err.message || "Failed to delete seminar hall.");
+  }
+};
+```
 
   const filteredHalls = halls.filter(
     (h) =>

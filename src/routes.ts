@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { and,eq } from "drizzle-orm";
 import { db } from "./db/index.ts";
 import { bookings, departments, halls, users } from "./db/schema.ts";
 import {

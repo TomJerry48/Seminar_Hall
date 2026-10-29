@@ -341,6 +341,14 @@ const handleDeleteHall = async (hall: any) => {
                       >
                         {hall.isActive ? "Deactivate" : "Activate"}
                       </button>
+                      ```tsx
+<button
+  onClick={() => handleDeleteHall(hall)}
+  className="px-2.5 py-1.5 text-xs font-medium border border-red-200 rounded-lg text-red-700 hover:bg-red-50 transition-colors"
+>
+  Delete
+</button>
+```
                     </>
                   )}
                   {hall.isActive && (
